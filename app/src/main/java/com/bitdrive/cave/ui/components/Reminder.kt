@@ -13,16 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import com.bitdrive.core.domain.Alarm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Reminder() {
+fun Reminder(alarm: Alarm, modifier: Modifier = Modifier) {
     var checked by remember {
-        mutableStateOf(true)
+        mutableStateOf(alarm.isActive)
     }
     Card(
-        modifier = Modifier
-            .padding(16.dp)
+        modifier = modifier
             .fillMaxWidth(),
         containerColor = colors.surface,
         shape = RoundedCornerShape(12.dp),
@@ -34,15 +34,21 @@ fun Reminder() {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-            ) { // content
+        ) { // content
             Column { // text
-                Text(text = "06:00 Wake Up", modifier = Modifier.alpha(if (checked) 1f else 0.6f))
-                Text(text = "Monday to Friday", modifier = Modifier.alpha(if (checked) 1f else 0.6f))
+                Text(text = "${alarm.time}", modifier = Modifier.alpha(if (checked) 1f else 0.6f))
+                Text(
+                    text = alarm.repeat,
+                    modifier = Modifier.alpha(if (checked) 1f else 0.6f)
+                )
             }
             Column {
                 Switch(
                     checked = checked,
-                    onCheckedChange = { checked = it }
+                    onCheckedChange = {
+                        checked = it
+                        alarm.isActive = it
+                    }
                 )
             }
         }
