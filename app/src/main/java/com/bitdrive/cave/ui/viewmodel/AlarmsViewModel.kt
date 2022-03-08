@@ -24,17 +24,8 @@ class AlarmsViewModel(application: Application, interactors: Interactors) :
         }
     }
 
-    private suspend fun loadAlarms() {
+    suspend fun loadAlarms() {
         alarms.clear()
         alarms.addAll(interactors.getAlarms())
-    }
-
-    fun addAlarm(alarm: Alarm) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                interactors.addAlarm(alarm)
-            }
-            alarms.add(alarm)
-        }
     }
 }

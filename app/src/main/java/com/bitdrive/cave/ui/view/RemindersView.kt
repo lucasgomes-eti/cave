@@ -1,7 +1,9 @@
 package com.bitdrive.cave.ui.view
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,15 +13,11 @@ import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +29,8 @@ import com.bitdrive.cave.ui.theme.CaveTheme
 import com.bitdrive.cave.ui.viewmodel.AlarmsViewModel
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(
     ExperimentalMaterialApi::class,
     ExperimentalMaterial3Api::class,
@@ -43,127 +43,19 @@ fun RemindersView() {
         factory = AppViewModelFactory,
         key = "Alarms"
     )
-    val modalBottomState =
+    val modalState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
+    if(!modalState.isVisible) {
+        scope.launch { viewModel.loadAlarms() }
+    }
+
     ModalBottomSheetLayout(
-        sheetState = modalBottomState,
+        sheetState = modalState,
         sheetContent = {
-            Column {
-                Row(
-                    Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(
-                        Modifier
-                            .size(48.dp)
-                            .clickable { scope.launch { modalBottomState.hide() } },
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            null,
-                            Modifier
-                                .size(24.dp),
-                            colors.onSurface
-                        )
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Add alarm")
-                        Text("Alarm in 23 hours 59 minutes")
-                    }
-                    Column(
-                        Modifier
-                            .size(48.dp)
-                            .clickable { scope.launch { modalBottomState.hide() } },
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            Icons.Default.Check,
-                            null,
-                            Modifier
-                                .size(24.dp),
-                            colors.onSurface
-                        )
-                    }
-                }
-                ListItem(
-                    text = { Text("14:23") },
-                    overlineText = { Text("Time") },
-                    trailing = {
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            null,
-                            tint = colors.onSurface
-                        )
-                    },
-                    modifier = Modifier.clickable { }
-                )
-                ListItem(
-                    text = { Text("Ringtone") },
-                    secondaryText = { Text("Default Ringtone") },
-                    trailing = {
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            null,
-                            tint = colors.onSurface
-                        )
-                    },
-                    modifier = Modifier.clickable { }
-                )
-                ListItem(
-                    text = { Text("Repeat") },
-                    secondaryText = { Text("Once") },
-                    trailing = {
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            null,
-                            tint = colors.onSurface
-                        )
-                    },
-                    modifier = Modifier.clickable { }
-                )
-                var vibrate by remember { mutableStateOf(true) }
-                ListItem(
-                    text = { Text("Vibrate when alarm sounds") },
-                    trailing = {
-                        Switch(
-                            checked = vibrate,
-                            onCheckedChange = { vibrate = it }
-                        )
-                    },
-                    modifier = Modifier.clickable { vibrate = !vibrate }
-                )
-                var delete by remember { mutableStateOf(false) }
-                ListItem(
-                    text = { Text("Delete after goes off") },
-                    trailing = {
-                        Switch(
-                            checked = delete,
-                            onCheckedChange = { delete = it }
-                        )
-                    },
-                    modifier = Modifier.clickable { delete = !delete }
-                )
-                ListItem(
-                    text = { Text("Label") },
-                    trailing = {
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            null,
-                            tint = colors.onSurface
-                        )
-                    },
-                    modifier = Modifier.clickable { }
-                )
-            }
+            NewOrEditAlarm(modalState = modalState)
         }) {
         Scaffold(
             containerColor = colors.background,
@@ -191,7 +83,7 @@ fun RemindersView() {
                     contentColor = colors.onPrimary,
                     content = { Icon(Icons.Filled.Add, null, tint = colors.onPrimary) },
                     onClick = {
-                        scope.launch { modalBottomState.show() }
+                        scope.launch { modalState.show() }
                     },
                     shape = RoundedCornerShape(16.dp),
                 )
@@ -200,6 +92,7 @@ fun RemindersView() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PreviewReminders() {
