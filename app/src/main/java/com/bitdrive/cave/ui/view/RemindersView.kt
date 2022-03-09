@@ -1,10 +1,10 @@
 package com.bitdrive.cave.ui.view
 
-import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,45 +17,37 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bitdrive.cave.framework.AppViewModelFactory
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.bitdrive.cave.ui.components.Reminder
 import com.bitdrive.cave.ui.theme.CaveTheme
 import com.bitdrive.cave.ui.viewmodel.AlarmsViewModel
 import kotlinx.coroutines.launch
 
-@SuppressLint("CoroutineCreationDuringComposition")
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(
     ExperimentalMaterialApi::class,
     ExperimentalMaterial3Api::class,
     ExperimentalFoundationApi::class
 )
 @Composable
-fun RemindersView() {
-    val viewModel = viewModel<AlarmsViewModel>(
-        viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current),
-        factory = AppViewModelFactory,
-        key = "Alarms"
-    )
+fun RemindersView(viewModel: AlarmsViewModel) {
     val modalState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-    if(!modalState.isVisible) {
-        scope.launch { viewModel.loadAlarms() }
-    }
+//    if(!modalState.isVisible) {
+//        scope.launch { viewModel.loadAlarms() }
+//    }
 
     ModalBottomSheetLayout(
         sheetState = modalState,
         sheetContent = {
-            NewOrEditAlarm(modalState = modalState)
+            NewOrEditAlarm(modalState = modalState, viewModel = hiltViewModel())
         }) {
         Scaffold(
             containerColor = colors.background,
@@ -97,6 +89,6 @@ fun RemindersView() {
 @Composable
 fun PreviewReminders() {
     CaveTheme(darkTheme = true) {
-        RemindersView()
+        //RemindersView()
     }
 }

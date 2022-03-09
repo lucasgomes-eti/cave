@@ -1,18 +1,19 @@
 package com.bitdrive.cave.ui.viewmodel
 
-import android.app.Application
 import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.input.TextFieldValue
-import com.bitdrive.cave.framework.AppViewModel
-import com.bitdrive.cave.framework.Interactors
+import androidx.lifecycle.ViewModel
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.domain.Recurrence
+import com.bitdrive.core.interactors.AddAlarm
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.datetime.*
+import javax.inject.Inject
 
-class NewOrEditAlarmViewModel(application: Application, interactors: Interactors) :
-    AppViewModel(application, interactors) {
+@HiltViewModel
+class NewOrEditAlarmViewModel @Inject constructor(private val addAlarm: AddAlarm) : ViewModel() {
 
     var selectedDateTime =
         mutableStateOf(Clock.System.now().plus(DateTimePeriod(hours = 1), TimeZone.UTC))
@@ -70,7 +71,7 @@ class NewOrEditAlarmViewModel(application: Application, interactors: Interactors
     }
 
     suspend fun addAlarm() {
-        interactors.addAlarm(
+        addAlarm(
             Alarm(
                 datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
                 ringtoneEncodedPath = ringtoneResult.value?.encodedPath,

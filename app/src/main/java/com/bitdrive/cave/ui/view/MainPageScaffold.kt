@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -87,7 +88,7 @@ fun MainPageScaffold() {
                     startDestination = NavigationBarItems.Reminders.route,
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable(NavigationBarItems.Reminders.route) { RemindersView() }
+                    composable(NavigationBarItems.Reminders.route) { RemindersView(viewModel = hiltViewModel()) }
                     composable(NavigationBarItems.Shop.route) { ShopView() }
                     composable(NavigationBarItems.LifeHacks.route) { LifeHacksView() }
                     composable(NavigationBarItems.Profile.route) { ProfileView() }

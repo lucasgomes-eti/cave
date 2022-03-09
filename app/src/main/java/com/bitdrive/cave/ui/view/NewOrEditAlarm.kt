@@ -4,11 +4,9 @@ import android.app.Activity.RESULT_OK
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.media.RingtoneManager.*
-import android.os.Build
 import android.text.format.DateFormat.is24HourFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -22,24 +20,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bitdrive.cave.framework.AppViewModelFactory
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun NewOrEditAlarm(modifier: Modifier = Modifier, modalState: ModalBottomSheetState) {
+fun NewOrEditAlarm(
+    modifier: Modifier = Modifier,
+    modalState: ModalBottomSheetState,
+    viewModel: NewOrEditAlarmViewModel
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val viewModel = viewModel<NewOrEditAlarmViewModel>(
-        viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current),
-        factory = AppViewModelFactory,
-        key = "NewOrEditAlarm"
-    )
     var ringtoneResult by remember {
         viewModel.ringtoneResult
     }

@@ -1,20 +1,16 @@
 package com.bitdrive.cave.ui.viewmodel
 
-import android.app.Application
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bitdrive.cave.framework.AppViewModel
-import com.bitdrive.cave.framework.Interactors
 import com.bitdrive.core.domain.Alarm
-import kotlinx.coroutines.Dispatchers
+import com.bitdrive.core.interactors.GetAlarms
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AlarmsViewModel(application: Application, interactors: Interactors) :
-    AppViewModel(application, interactors) {
+@HiltViewModel
+class AlarmsViewModel @Inject constructor(private val getAlarms: GetAlarms) : ViewModel() {
 
     val alarms = mutableStateListOf<Alarm>()
 
@@ -26,6 +22,6 @@ class AlarmsViewModel(application: Application, interactors: Interactors) :
 
     suspend fun loadAlarms() {
         alarms.clear()
-        alarms.addAll(interactors.getAlarms())
+        alarms.addAll(getAlarms())
     }
 }
