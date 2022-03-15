@@ -1,4 +1,4 @@
-package com.bitdrive.cave.framework
+package com.bitdrive.cave.framework.di
 
 import com.bitdrive.core.data.AlarmRepository
 import com.bitdrive.core.interactors.AddAlarm
@@ -7,13 +7,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class UseCasesModule {
-
     @Singleton
     @Provides
     fun provideGetAlarms(alarmRepository: AlarmRepository) = GetAlarms(alarmRepository)
