@@ -2,6 +2,8 @@ package com.bitdrive.cave.framework.datasource
 
 import com.bitdrive.core.data.AlarmDataSource
 import com.bitdrive.core.domain.Alarm
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class AlarmInMemory : AlarmDataSource {
 
@@ -11,7 +13,7 @@ class AlarmInMemory : AlarmDataSource {
         alarms.add(alarm)
     }
 
-    override suspend fun read(): List<Alarm> = alarms
+    override fun read(): Flow<List<Alarm>> = flowOf(alarms)
 
     override suspend fun remove(alarm: Alarm) {
         alarms.remove(alarm)

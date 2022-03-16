@@ -4,12 +4,13 @@ import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.bitdrive.cave.framework.db.model.AlarmEntity
 import com.bitdrive.cave.framework.db.vo.AlarmVO
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlarmDao {
     @Transaction
     @Query("SELECT * FROM alarm")
-    suspend fun read(): List<AlarmVO>
+    fun read(): Flow<List<AlarmVO>>
 
     @Insert(onConflict = REPLACE)
     suspend fun add(alarmEntity: AlarmEntity)

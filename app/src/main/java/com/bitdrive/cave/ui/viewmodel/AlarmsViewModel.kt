@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.interactors.GetAlarms
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,13 +18,18 @@ class AlarmsViewModel @Inject constructor(private val getAlarms: GetAlarms) : Vi
     val alarms = mutableStateListOf<Alarm>()
 
     init {
-        viewModelScope.launch {
-            loadAlarms()
-        }
+        loadAlarms()
     }
 
-    suspend fun loadAlarms() {
-        alarms.clear()
-        alarms.addAll(getAlarms())
+    private fun loadAlarms() {
+        viewModelScope.launch {
+            getAlarms()
+                .distinctUntilChanged()
+                .onEach {
+                    alarms.clear()
+                    alarms.addAll(it)
+                }
+                .collect()
+        }
     }
 }

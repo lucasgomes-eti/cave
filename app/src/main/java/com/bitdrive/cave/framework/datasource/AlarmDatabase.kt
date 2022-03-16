@@ -6,6 +6,8 @@ import com.bitdrive.cave.framework.db.model.AlarmEntity
 import com.bitdrive.cave.framework.db.model.RecurrenceEntity
 import com.bitdrive.core.data.AlarmDataSource
 import com.bitdrive.core.domain.Alarm
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class AlarmDatabase(
     private val alarmDao: AlarmDao,
@@ -18,8 +20,8 @@ class AlarmDatabase(
         alarmDao.add(AlarmEntity(alarm, rowId))
     }
 
-    override suspend fun read(): List<Alarm> {
-        return alarmDao.read().map { it.map() }
+    override fun read(): Flow<List<Alarm>> {
+        return alarmDao.read().map { it.map { vo -> vo.map() } }
     }
 
     override suspend fun remove(alarm: Alarm) {

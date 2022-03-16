@@ -40,10 +40,6 @@ fun RemindersView(viewModel: AlarmsViewModel) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-//    if(!modalState.isVisible) {
-//        scope.launch { viewModel.loadAlarms() }
-//    }
-
     ModalBottomSheetLayout(
         sheetState = modalState,
         sheetContent = {
