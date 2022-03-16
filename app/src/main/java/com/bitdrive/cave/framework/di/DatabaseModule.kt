@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.bitdrive.cave.framework.db.Database
 import com.bitdrive.cave.framework.db.dao.AlarmDao
+import com.bitdrive.cave.framework.db.dao.RecurrenceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,5 +26,11 @@ class DatabaseModule {
     @Provides
     internal fun provideAlarmDao(database: Database): AlarmDao {
         return database.alarmDao()
+    }
+
+    @Singleton
+    @Provides
+    internal fun provideRecurrenceDao(database: Database): RecurrenceDao {
+        return database.recurrenceDao()
     }
 }

@@ -19,6 +19,18 @@ data class RecurrenceEntity(
     val endAfterOccurrencesCount: Int?,
     val createdAt: LocalDate
 ) {
+    constructor(recurrence: Recurrence) : this(
+        id = null,
+        repeatCount = recurrence.repeatCount,
+        repeatType = recurrence.repeatType,
+        daysOfWeek = recurrence.daysOfWeek,
+        monthlyOn = recurrence.monthlyOn,
+        endType = recurrence.endType,
+        endOnDate = recurrence.endOnDate,
+        endAfterOccurrencesCount = recurrence.endAfterOccurrencesCount,
+        createdAt = recurrence.createdAt
+    )
+
     fun map() = Recurrence(
         repeatCount = repeatCount,
         repeatType = repeatType,

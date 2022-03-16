@@ -1,9 +1,9 @@
-package com.bitdrive.cave.framework
+package com.bitdrive.cave.framework.datasource
 
 import com.bitdrive.core.data.AlarmDataSource
 import com.bitdrive.core.domain.Alarm
 
-class InMemoryAlarmDataSource : AlarmDataSource {
+class AlarmInMemory : AlarmDataSource {
 
     private val alarms = mutableListOf(Alarm(), Alarm(), Alarm())
 

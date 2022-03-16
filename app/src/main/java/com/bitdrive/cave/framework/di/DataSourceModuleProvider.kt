@@ -1,6 +1,9 @@
 package com.bitdrive.cave.framework.di
 
-import com.bitdrive.cave.framework.InMemoryAlarmDataSource
+import com.bitdrive.cave.framework.datasource.AlarmDatabase
+import com.bitdrive.cave.framework.datasource.AlarmInMemory
+import com.bitdrive.cave.framework.db.dao.AlarmDao
+import com.bitdrive.cave.framework.db.dao.RecurrenceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +15,13 @@ import javax.inject.Singleton
 class DataSourceModuleProvider {
     @Singleton
     @Provides
-    fun provideInMemoryAlarmDataSource(): InMemoryAlarmDataSource {
-        return InMemoryAlarmDataSource()
+    fun provideAlarmInMemory(): AlarmInMemory {
+        return AlarmInMemory()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlarmDatabase(alarmDao: AlarmDao, recurrenceDao: RecurrenceDao): AlarmDatabase {
+        return AlarmDatabase(alarmDao, recurrenceDao)
     }
 }

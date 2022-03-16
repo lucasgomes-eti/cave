@@ -1,6 +1,6 @@
 package com.bitdrive.cave.framework.di
 
-import com.bitdrive.cave.framework.db.dao.AlarmDao
+import com.bitdrive.cave.framework.datasource.AlarmDatabase
 import com.bitdrive.core.data.AlarmDataSource
 import dagger.Binds
 import dagger.Module
@@ -14,6 +14,6 @@ abstract class DataSourceModuleBinder {
     @Singleton
     @Binds
     abstract fun bindsAlarmDataSource(
-        databaseAlarmDataSource: AlarmDao
+        alarmDatabase: AlarmDatabase
     ): AlarmDataSource
 }

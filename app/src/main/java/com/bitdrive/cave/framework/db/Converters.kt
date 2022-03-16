@@ -36,13 +36,11 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromMonthlyTypeToString(value: Recurrence.MonthlyType): String {
-        return value.value
-    }
+    fun fromMonthlyTypeToString(value: Recurrence.MonthlyType?) = value?.value
 
     @TypeConverter
-    fun fromStringToMonthlyType(value: String): Recurrence.MonthlyType {
-        return Recurrence.MonthlyType.values().first { it.value == value }
+    fun fromStringToMonthlyType(value: String?): Recurrence.MonthlyType? {
+        return Recurrence.MonthlyType.values().firstOrNull { it.value == value }
     }
 
     @TypeConverter
@@ -52,10 +50,10 @@ class Converters {
     fun fromStringToEndType(value: String) = Recurrence.EndType.values().first { it.value == value }
 
     @TypeConverter
-    fun fromLocalDateToEpoch(value: LocalDate) =
-        value.atTime(0, 0).toInstant(TimeZone.UTC).epochSeconds
+    fun fromLocalDateToEpoch(value: LocalDate?) =
+        value?.atTime(0, 0)?.toInstant(TimeZone.UTC)?.epochSeconds
 
     @TypeConverter
-    fun fromEpochToLocalDate(value: Long) =
-        Instant.fromEpochSeconds(value).toLocalDateTime(TimeZone.UTC).date
+    fun fromEpochToLocalDate(value: Long?) =
+        value?.let { Instant.fromEpochSeconds(it).toLocalDateTime(TimeZone.UTC).date }
 }

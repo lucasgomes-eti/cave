@@ -17,11 +17,11 @@ data class AlarmEntity(
     var isActive: Boolean,
     val label: String?
 ) {
-    constructor(alarm: Alarm): this(
+    constructor(alarm: Alarm, recurrenceId: Long? = null): this(
         id = null,
         datetimeInUtc = alarm.datetimeInUtc,
         ringtoneEncodedPath = alarm.ringtoneEncodedPath,
-        recurrenceId = alarm.repeat?.id,
+        recurrenceId = recurrenceId,
         vibrate = alarm.vibrate,
         delete = alarm.delete,
         isActive = alarm.isActive,

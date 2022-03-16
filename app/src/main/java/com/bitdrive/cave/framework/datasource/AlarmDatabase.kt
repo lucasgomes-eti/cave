@@ -1,0 +1,28 @@
+package com.bitdrive.cave.framework.datasource
+
+import com.bitdrive.cave.framework.db.dao.AlarmDao
+import com.bitdrive.cave.framework.db.dao.RecurrenceDao
+import com.bitdrive.cave.framework.db.model.AlarmEntity
+import com.bitdrive.cave.framework.db.model.RecurrenceEntity
+import com.bitdrive.core.data.AlarmDataSource
+import com.bitdrive.core.domain.Alarm
+
+class AlarmDatabase(
+    private val alarmDao: AlarmDao,
+    private val recurrenceDao: RecurrenceDao
+) : AlarmDataSource {
+    override suspend fun add(alarm: Alarm) {
+        val rowId = alarm.repeat?.let {
+            recurrenceDao.add(RecurrenceEntity(it))
+        }
+        alarmDao.add(AlarmEntity(alarm, rowId))
+    }
+
+    override suspend fun read(): List<Alarm> {
+        return alarmDao.read().map { it.map() }
+    }
+
+    override suspend fun remove(alarm: Alarm) {
+        alarmDao.delete(AlarmEntity(alarm))
+    }
+}
