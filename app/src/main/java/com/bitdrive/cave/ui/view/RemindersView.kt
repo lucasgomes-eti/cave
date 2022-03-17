@@ -29,8 +29,6 @@ import com.bitdrive.cave.ui.theme.CaveTheme
 import com.bitdrive.cave.ui.viewmodel.AlarmsViewModel
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 
 @OptIn(
     ExperimentalMaterialApi::class,
@@ -64,13 +62,11 @@ fun RemindersView(viewModel: AlarmsViewModel) {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(
-                        items = viewModel.alarms,
-                        key = { it.datetimeInUtc.toInstant(TimeZone.UTC).epochSeconds }) {
+                    items(viewModel.alarms) {
                         Reminder(it, Modifier.clickable {
                             newOrEditAlarmViewModel.bindAlarm(it)
                             scope.launch { modalState.show() }
-                        })
+                        }) { viewModel.toggle(it) }
                     }
                 }
             },

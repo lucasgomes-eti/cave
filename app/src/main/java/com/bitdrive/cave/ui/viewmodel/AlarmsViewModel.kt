@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.interactors.GetAlarms
+import com.bitdrive.core.interactors.ToggleAlarm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -13,7 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AlarmsViewModel @Inject constructor(private val getAlarms: GetAlarms) : ViewModel() {
+class AlarmsViewModel @Inject constructor(
+    private val getAlarms: GetAlarms,
+    private val toggleAlarm: ToggleAlarm
+) : ViewModel() {
 
     val alarms = mutableStateListOf<Alarm>()
 
@@ -31,5 +35,9 @@ class AlarmsViewModel @Inject constructor(private val getAlarms: GetAlarms) : Vi
                 }
                 .collect()
         }
+    }
+
+    fun toggle(alarm: Alarm) {
+        viewModelScope.launch { this@AlarmsViewModel.toggleAlarm(alarm) }
     }
 }
