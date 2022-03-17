@@ -18,7 +18,7 @@ data class AlarmEntity(
     val label: String?
 ) {
     constructor(alarm: Alarm, recurrenceId: Long? = null): this(
-        id = null,
+        id = alarm.id,
         datetimeInUtc = alarm.datetimeInUtc,
         ringtoneEncodedPath = alarm.ringtoneEncodedPath,
         recurrenceId = recurrenceId,

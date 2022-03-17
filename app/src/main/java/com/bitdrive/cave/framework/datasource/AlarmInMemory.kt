@@ -15,6 +15,10 @@ class AlarmInMemory : AlarmDataSource {
 
     override fun read(): Flow<List<Alarm>> = flowOf(alarms)
 
+    override suspend fun update(alarm: Alarm) {
+        alarms.replaceAll{ alarm }
+    }
+
     override suspend fun remove(alarm: Alarm) {
         alarms.remove(alarm)
     }

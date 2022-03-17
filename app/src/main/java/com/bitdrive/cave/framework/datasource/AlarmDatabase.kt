@@ -17,14 +17,19 @@ class AlarmDatabase(
         val rowId = alarm.repeat?.let {
             recurrenceDao.add(RecurrenceEntity(it))
         }
-        alarmDao.add(AlarmEntity(alarm, rowId))
+        alarmDao.add(AlarmEntity(alarm = alarm, recurrenceId = rowId))
     }
 
     override fun read(): Flow<List<Alarm>> {
         return alarmDao.read().map { it.map { vo -> vo.map() } }
     }
 
+    override suspend fun update(alarm: Alarm) {
+        add(alarm)
+    }
+
     override suspend fun remove(alarm: Alarm) {
         alarmDao.delete(AlarmEntity(alarm))
+        alarm.repeat?.let { recurrenceDao.delete(RecurrenceEntity(it)) }
     }
 }

@@ -4,10 +4,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.random.Random
 
 data class Alarm(
-    val id: Long = Random.nextLong(),
+    val id: Long? = null,
     val datetimeInUtc: LocalDateTime,
     val ringtoneEncodedPath: String?,
     val repeat: Recurrence?,

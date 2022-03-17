@@ -4,10 +4,9 @@ import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import java.time.format.TextStyle
 import java.util.*
-import kotlin.random.Random
 
 data class Recurrence(
-    val id: Long = Random.nextLong(),
+    val id: Long? = null,
     val repeatCount: Int,
     val repeatType: RepeatType,
     val daysOfWeek: List<DayOfWeek>,

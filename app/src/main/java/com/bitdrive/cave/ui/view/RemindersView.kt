@@ -3,6 +3,7 @@ package com.bitdrive.cave.ui.view
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +27,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bitdrive.cave.ui.components.Reminder
 import com.bitdrive.cave.ui.theme.CaveTheme
 import com.bitdrive.cave.ui.viewmodel.AlarmsViewModel
+import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 @OptIn(
     ExperimentalMaterialApi::class,
@@ -40,10 +44,16 @@ fun RemindersView(viewModel: AlarmsViewModel) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
+    val newOrEditAlarmViewModel = hiltViewModel<NewOrEditAlarmViewModel>()
+
+    if (!modalState.isVisible) {
+        newOrEditAlarmViewModel.reset()
+    }
+
     ModalBottomSheetLayout(
         sheetState = modalState,
         sheetContent = {
-            NewOrEditAlarm(modalState = modalState, viewModel = hiltViewModel())
+            NewOrEditAlarm(modalState = modalState, viewModel = newOrEditAlarmViewModel)
         }) {
         Scaffold(
             containerColor = colors.background,
@@ -56,11 +66,11 @@ fun RemindersView(viewModel: AlarmsViewModel) {
                 ) {
                     items(
                         items = viewModel.alarms,
-                        key = { it.id }) {
-                        Reminder(
-                            it,
-                            Modifier.animateItemPlacement()
-                        )
+                        key = { it.datetimeInUtc.toInstant(TimeZone.UTC).epochSeconds }) {
+                        Reminder(it, Modifier.clickable {
+                            newOrEditAlarmViewModel.bindAlarm(it)
+                            scope.launch { modalState.show() }
+                        })
                     }
                 }
             },

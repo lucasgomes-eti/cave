@@ -1,6 +1,8 @@
 package com.bitdrive.cave.ui.viewmodel
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.input.TextFieldValue
@@ -8,12 +10,16 @@ import androidx.lifecycle.ViewModel
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.domain.Recurrence
 import com.bitdrive.core.interactors.AddAlarm
+import com.bitdrive.core.interactors.UpdateAlarm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.datetime.*
 import javax.inject.Inject
 
 @HiltViewModel
-class NewOrEditAlarmViewModel @Inject constructor(private val addAlarm: AddAlarm) : ViewModel() {
+class NewOrEditAlarmViewModel @Inject constructor(
+    private val addAlarm: AddAlarm,
+    private val updateAlarm: UpdateAlarm
+) : ViewModel() {
 
     var selectedDateTime =
         mutableStateOf(Clock.System.now().plus(DateTimePeriod(hours = 1), TimeZone.UTC))
@@ -27,6 +33,8 @@ class NewOrEditAlarmViewModel @Inject constructor(private val addAlarm: AddAlarm
     val delete = mutableStateOf(false)
 
     val label = mutableStateOf(TextFieldValue(""))
+
+    private val alarmId = mutableStateOf<Long?>(null)
 
     fun createRecurrence(
         repeatRecurrence: String,
@@ -70,18 +78,41 @@ class NewOrEditAlarmViewModel @Inject constructor(private val addAlarm: AddAlarm
         )
     }
 
-    suspend fun addAlarm() {
-        addAlarm(
-            Alarm(
-                datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
-                ringtoneEncodedPath = ringtoneResult.value?.encodedPath,
-                repeat = recurrence.value,
-                vibrate = vibrate.value,
-                delete = delete.value,
-                isActive = true,
-                label = label.value.text.ifEmpty { null }
-            )
+    suspend fun saveAlarm() {
+        val alarm = Alarm(
+            datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
+            ringtoneEncodedPath = ringtoneResult.value?.encodedPath,
+            repeat = recurrence.value,
+            vibrate = vibrate.value,
+            delete = delete.value,
+            isActive = true,
+            label = label.value.text.ifEmpty { null }
         )
+        if (alarmId.value == null) {
+            addAlarm(alarm)
+        } else {
+            updateAlarm(alarm.copy(id = alarmId.value!!))
+        }
+    }
 
+    fun reset() {
+        alarmId.value = null
+        selectedDateTime.value = Clock.System.now().plus(DateTimePeriod(hours = 1), TimeZone.UTC)
+        ringtoneResult.value = null
+        recurrence.value = null
+        vibrate.value = true
+        delete.value = false
+        label.value = TextFieldValue("")
+    }
+
+    fun bindAlarm(alarm: Alarm) {
+        alarmId.value = alarm.id
+        selectedDateTime.value = alarm.datetimeInUtc.toInstant(TimeZone.UTC)
+        ringtoneResult.value =
+            alarm.ringtoneEncodedPath?.let { Uri.Builder().encodedPath(it).build() }
+        recurrence.value = alarm.repeat
+        vibrate.value = alarm.vibrate
+        delete.value = alarm.delete
+        label.value = TextFieldValue(alarm.label ?: "")
     }
 }

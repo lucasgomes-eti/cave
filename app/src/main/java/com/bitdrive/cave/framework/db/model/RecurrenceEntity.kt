@@ -9,7 +9,7 @@ import kotlinx.datetime.LocalDate
 @Entity(tableName = "recurrence")
 data class RecurrenceEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
+    val id: Long? = null,
     val repeatCount: Int,
     val repeatType: Recurrence.RepeatType,
     val daysOfWeek: List<DayOfWeek>,
@@ -20,7 +20,7 @@ data class RecurrenceEntity(
     val createdAt: LocalDate
 ) {
     constructor(recurrence: Recurrence) : this(
-        id = null,
+        id = recurrence.id,
         repeatCount = recurrence.repeatCount,
         repeatType = recurrence.repeatType,
         daysOfWeek = recurrence.daysOfWeek,

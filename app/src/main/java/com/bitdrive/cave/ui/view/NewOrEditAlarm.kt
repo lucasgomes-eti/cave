@@ -115,7 +115,7 @@ fun NewOrEditAlarm(
                     .clickable {
                         scope.launch {
                             modalState.hide()
-                            scope.launch { viewModel.addAlarm() }
+                            scope.launch { viewModel.saveAlarm() }
                         }
                     },
                 verticalArrangement = Arrangement.Center,
