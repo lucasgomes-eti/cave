@@ -7,18 +7,23 @@ import android.media.RingtoneManager.*
 import android.text.format.DateFormat.is24HourFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
@@ -75,6 +80,31 @@ fun NewOrEditAlarm(
     if (openLabelDialog.value) {
         LabelDialog(openDialog = openLabelDialog, newOrEditAlarmViewModel = viewModel)
     }
+
+    val openDeleteDialog = remember { mutableStateOf(false) }
+    if (openDeleteDialog.value) {
+        AlertDialog(
+            containerColor = colors.surface,
+            textContentColor = colors.onSurface,
+            text = { Text("Delete alarm?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    openDeleteDialog.value = false
+                    scope.launch { modalState.hide() }
+                    viewModel.deleteAlarm()
+                }) {
+                    Text("Delete", color = colors.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { openDeleteDialog.value = false }) {
+                    Text("Cancel", color = colors.secondary)
+                }
+            },
+            onDismissRequest = { openDeleteDialog.value = false }
+        )
+    }
+
     Column(modifier = modifier) {
         Row(
             Modifier
@@ -233,5 +263,22 @@ fun NewOrEditAlarm(
                 { Text(text = viewModel.label.value.text) }
             }
         )
+        if (viewModel.alarmId.value != null) {
+            ListItem(
+                text = { Text("Delete", style = TextStyle(color = colors.onError)) },
+                icon = {
+                    Icon(
+                        Icons.Default.Delete,
+                        null,
+                        tint = colors.onError
+                    )
+                },
+                modifier = Modifier
+                    .background(color = colors.error)
+                    .clickable {
+                        openDeleteDialog.value = true
+                    }
+            )
+        }
     }
 }

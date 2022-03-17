@@ -1,24 +1,26 @@
 package com.bitdrive.cave.ui.viewmodel
 
 import android.net.Uri
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.domain.Recurrence
 import com.bitdrive.core.interactors.AddAlarm
+import com.bitdrive.core.interactors.DeleteAlarm
 import com.bitdrive.core.interactors.UpdateAlarm
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import javax.inject.Inject
 
 @HiltViewModel
 class NewOrEditAlarmViewModel @Inject constructor(
     private val addAlarm: AddAlarm,
-    private val updateAlarm: UpdateAlarm
+    private val updateAlarm: UpdateAlarm,
+    private val deleteAlarm: DeleteAlarm
 ) : ViewModel() {
 
     var selectedDateTime =
@@ -34,7 +36,7 @@ class NewOrEditAlarmViewModel @Inject constructor(
 
     val label = mutableStateOf(TextFieldValue(""))
 
-    private val alarmId = mutableStateOf<Long?>(null)
+    val alarmId = mutableStateOf<Long?>(null)
 
     fun createRecurrence(
         repeatRecurrence: String,
@@ -114,5 +116,21 @@ class NewOrEditAlarmViewModel @Inject constructor(
         vibrate.value = alarm.vibrate
         delete.value = alarm.delete
         label.value = TextFieldValue(alarm.label ?: "")
+    }
+
+    fun deleteAlarm() {
+        viewModelScope.launch {
+            val alarm = Alarm(
+                id = alarmId.value,
+                datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
+                ringtoneEncodedPath = ringtoneResult.value?.encodedPath,
+                repeat = recurrence.value,
+                vibrate = vibrate.value,
+                delete = delete.value,
+                isActive = true,
+                label = label.value.text.ifEmpty { null }
+            )
+            deleteAlarm(alarm)
+        }
     }
 }

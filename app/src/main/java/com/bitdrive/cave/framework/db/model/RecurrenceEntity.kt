@@ -32,6 +32,7 @@ data class RecurrenceEntity(
     )
 
     fun map() = Recurrence(
+        id = id,
         repeatCount = repeatCount,
         repeatType = repeatType,
         daysOfWeek = daysOfWeek,

@@ -2,6 +2,7 @@ package com.bitdrive.cave.framework.di
 
 import com.bitdrive.core.data.AlarmRepository
 import com.bitdrive.core.interactors.AddAlarm
+import com.bitdrive.core.interactors.DeleteAlarm
 import com.bitdrive.core.interactors.GetAlarms
 import com.bitdrive.core.interactors.UpdateAlarm
 import dagger.Module
@@ -24,4 +25,8 @@ class UseCasesModule {
     @Singleton
     @Provides
     fun provideUpdateAlarm(alarmRepository: AlarmRepository) = UpdateAlarm(alarmRepository)
+
+    @Singleton
+    @Provides
+    fun provideDeleteAlarm(alarmRepository: AlarmRepository) = DeleteAlarm(alarmRepository)
 }
