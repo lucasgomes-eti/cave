@@ -365,12 +365,12 @@ fun RecurrenceDialog(
                                                     if (focusState.isFocused) {
                                                         scope.launch {
                                                             delay(10)
-                                                            val text = afterOccurrences.text
+                                                            val textlength = afterOccurrences.text.length
                                                             afterOccurrences =
                                                                 afterOccurrences.copy(
                                                                     selection = TextRange(
                                                                         0,
-                                                                        text.length
+                                                                        textlength
                                                                     )
                                                                 )
                                                         }

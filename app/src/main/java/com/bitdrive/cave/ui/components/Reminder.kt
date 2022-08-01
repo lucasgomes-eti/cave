@@ -9,7 +9,7 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,8 +20,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Reminder(
     alarm: Alarm,
@@ -31,7 +29,7 @@ fun Reminder(
     Card(
         modifier = modifier
             .fillMaxWidth(),
-        containerColor = colors.surface,
+        colors = CardDefaults.cardColors(containerColor = colors.surface),
         shape = RoundedCornerShape(12.dp),
         border = if (alarm.isActive) BorderStroke(1.dp, colors.onSurface) else null,
     ) {

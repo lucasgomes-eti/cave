@@ -50,7 +50,7 @@ fun MainPageScaffold() {
                     ) {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
-                        items.forEachIndexed { index, item ->
+                        items.forEachIndexed { _, item ->
                             val isSelected =
                                 currentDestination?.hierarchy?.any { it.route == item.route } == true //selectedItem == index
                             NavigationBarItem(
