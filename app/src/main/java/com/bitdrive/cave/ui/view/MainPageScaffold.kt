@@ -28,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.bitdrive.cave.NavigationBarItems
 import com.bitdrive.cave.ui.theme.CaveTheme
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MainPageScaffold() {
     val navController = rememberNavController()

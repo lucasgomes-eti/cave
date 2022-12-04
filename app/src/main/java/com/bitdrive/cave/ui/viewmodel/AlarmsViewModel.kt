@@ -38,6 +38,6 @@ class AlarmsViewModel @Inject constructor(
     }
 
     fun toggle(alarm: Alarm) {
-        viewModelScope.launch { this@AlarmsViewModel.toggleAlarm(alarm) }
+        viewModelScope.launch { toggleAlarm(alarm) }
     }
 }

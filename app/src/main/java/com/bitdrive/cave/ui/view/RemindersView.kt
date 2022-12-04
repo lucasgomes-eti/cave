@@ -1,7 +1,6 @@
 package com.bitdrive.cave.ui.view
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +28,7 @@ import com.bitdrive.cave.ui.viewmodel.AlarmsViewModel
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(
     ExperimentalMaterialApi::class,
     ExperimentalMaterial3Api::class
@@ -54,7 +54,7 @@ fun RemindersView(viewModel: AlarmsViewModel) {
         Scaffold(
             containerColor = colors.background,
             contentColor = colors.onBackground,
-            content = {
+            content = { _ ->
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = PaddingValues(16.dp),
@@ -64,7 +64,9 @@ fun RemindersView(viewModel: AlarmsViewModel) {
                         Reminder(it, Modifier.clickable {
                             newOrEditAlarmViewModel.bindAlarm(it)
                             scope.launch { modalState.show() }
-                        }) { viewModel.toggle(it) }
+                        }) {
+                            viewModel.toggle(it)
+                        }
                     }
                 }
             },
@@ -84,7 +86,6 @@ fun RemindersView(viewModel: AlarmsViewModel) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PreviewReminders() {

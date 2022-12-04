@@ -1,7 +1,5 @@
 package com.bitdrive.cave.ui.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +8,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -26,12 +24,15 @@ fun Reminder(
     modifier: Modifier = Modifier,
     onCheckedChange: () -> Unit
 ) {
+    var isAlarmActive by remember {
+        mutableStateOf(alarm.isActive)
+    }
     Card(
         modifier = modifier
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = colors.surface),
         shape = RoundedCornerShape(12.dp),
-        border = if (alarm.isActive) BorderStroke(1.dp, colors.onSurface) else null,
+        border = if (isAlarmActive) BorderStroke(1.dp, colors.onSurface) else null,
     ) {
         Row(
             modifier = Modifier
@@ -57,17 +58,20 @@ fun Reminder(
                             dateTimeInCurrentTimeZone.minute
                         )
                     }" + if (alarm.label.isNullOrBlank()) "" else " | ${alarm.label}",
-                    modifier = Modifier.alpha(if (alarm.isActive) 1f else 0.6f)
+                    modifier = Modifier.alpha(if (isAlarmActive) 1f else 0.6f)
                 )
                 Text(
                     text = if (alarm.repeat == null) "Once" else alarm.repeat!!.getDisplayName(),
-                    modifier = Modifier.alpha(if (alarm.isActive) 1f else 0.6f)
+                    modifier = Modifier.alpha(if (isAlarmActive) 1f else 0.6f)
                 )
             }
             Column {
                 Switch(
-                    checked = alarm.isActive,
-                    onCheckedChange = { onCheckedChange() }
+                    checked = isAlarmActive,
+                    onCheckedChange = { checked ->
+                        onCheckedChange()
+                        isAlarmActive = checked
+                    }
                 )
             }
         }
