@@ -2,8 +2,6 @@ package com.bitdrive.cave.ui.view
 
 import android.app.DatePickerDialog
 import android.icu.text.MessageFormat
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
@@ -14,9 +12,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import com.bitdrive.core.domain.Recurrence
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
@@ -42,8 +40,7 @@ import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecurrenceDialog(
     modifier: Modifier = Modifier,
@@ -137,9 +134,9 @@ fun RecurrenceDialog(
 
     AlertDialog(
         modifier = modifier,
-        containerColor = colors.surface,
-        titleContentColor = colors.onSurface,
-        textContentColor = colors.onSurface,
+        containerColor = colorScheme.surface,
+        titleContentColor = colorScheme.onSurface,
+        textContentColor = colorScheme.onSurface,
         onDismissRequest = { openDialog.value = false },
         title = {
             Text("Create Recurrence")
@@ -203,10 +200,11 @@ fun RecurrenceDialog(
                                         onClick = {
                                             repeatEverySelectedOption = it
                                             repeatEveryExpanded = false
+                                        },
+                                        text = {
+                                            Text(it)
                                         }
-                                    ) {
-                                        Text(it)
-                                    }
+                                    )
                                 }
                             }
                         })
@@ -218,31 +216,31 @@ fun RecurrenceDialog(
                             LazyRow {
                                 items(daysOfWeekOptions.size) { it ->
                                     val item = daysOfWeekOptions[it]
-                                    Chip(
-                                        content = {
+                                    AssistChip(
+                                        label = {
                                             Text(
                                                 item.first.getDisplayName(
                                                     TextStyle.SHORT,
                                                     Locale.getDefault()
                                                 )[0].uppercase(),
                                                 color = if (item.second) {
-                                                    colors.onPrimary
+                                                    colorScheme.onPrimary
                                                 } else {
-                                                    colors.onSurface
+                                                    colorScheme.onSurface
                                                 }
                                             )
                                         },
                                         shape = CircleShape,
-                                        colors = ChipDefaults.chipColors(
-                                            backgroundColor = if (item.second) {
-                                                colors.primary
+                                        colors = AssistChipDefaults.assistChipColors(
+                                            containerColor = if (item.second) {
+                                                colorScheme.primary
                                             } else {
-                                                colors.surface
+                                                colorScheme.surface
                                             },
                                         ),
                                         onClick = {
                                             if (item.first == today.dayOfWeek && daysOfWeekOptions.filter { it.second }.size <= 1)
-                                                return@Chip
+                                                return@AssistChip
 
                                             daysOfWeekOptions.removeAt(it)
                                             daysOfWeekOptions.add(
@@ -296,9 +294,10 @@ fun RecurrenceDialog(
                                     DropdownMenuItem(onClick = {
                                         repeatMonthlySelectedOption = it
                                         repeatMonthlyExpanded = false
-                                    }) {
-                                        Text(it.first)
-                                    }
+                                    },
+                                        text = {
+                                            Text(it.first)
+                                        })
                                 }
                             }
                         }
@@ -306,7 +305,7 @@ fun RecurrenceDialog(
                 }
                 Row(modifier = Modifier.padding(top = 16.dp)) { // Ends
                     Column {
-                        Text("Ends", style = MaterialTheme.typography.h5)
+                        Text("Ends", style = typography.headlineSmall)
                         Column(
                             Modifier
                                 .selectableGroup()
@@ -331,7 +330,7 @@ fun RecurrenceDialog(
                                     )
                                     Text(
                                         text = text,
-                                        style = MaterialTheme.typography.body1.merge(),
+                                        style = typography.bodyMedium.merge(),
                                         modifier = Modifier.padding(start = 16.dp)
                                     )
                                     if (text == selectedEndOnOption && selectedEndOnOption == endOnOptions[1]) {
@@ -347,8 +346,8 @@ fun RecurrenceDialog(
                                             interactionSource = remember { MutableInteractionSource() } // onClick workaround
                                                 .also { interactionSource ->
                                                     LaunchedEffect(interactionSource) {
-                                                        interactionSource.interactions.collect {
-                                                            if (it is PressInteraction.Release) {
+                                                        interactionSource.interactions.collectIndexed { _, value ->
+                                                            if (value is PressInteraction.Release) {
                                                                 datePickerDialog.show()
                                                             }
                                                         }
@@ -365,12 +364,13 @@ fun RecurrenceDialog(
                                                     if (focusState.isFocused) {
                                                         scope.launch {
                                                             delay(10)
-                                                            val textlength = afterOccurrences.text.length
+                                                            val textLength =
+                                                                afterOccurrences.text.length
                                                             afterOccurrences =
                                                                 afterOccurrences.copy(
                                                                     selection = TextRange(
                                                                         0,
-                                                                        textlength
+                                                                        textLength
                                                                     )
                                                                 )
                                                         }
@@ -410,14 +410,14 @@ fun RecurrenceDialog(
                     openDialog.value = false
                 },
             ) {
-                Text("Done", color = colors.primary)
+                Text("Done", color = colorScheme.primary)
             }
         },
         dismissButton = {
             TextButton(
                 onClick = { openDialog.value = false },
             ) {
-                Text("Cancel", color = colors.secondary)
+                Text("Cancel", color = colorScheme.secondary)
             }
         }
     )

@@ -1,10 +1,7 @@
 package com.bitdrive.cave.ui.view
 
-import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -17,6 +14,7 @@ import androidx.compose.ui.text.TextRange
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabelDialog(
     modifier: Modifier = Modifier, openDialog: MutableState<Boolean>,
@@ -26,9 +24,9 @@ fun LabelDialog(
     val inputService = LocalTextInputService.current
     AlertDialog(
         modifier = modifier,
-        containerColor = colors.surface,
-        titleContentColor = colors.onSurface,
-        textContentColor = colors.onSurface,
+        containerColor = colorScheme.surface,
+        titleContentColor = colorScheme.onSurface,
+        textContentColor = colorScheme.onSurface,
         onDismissRequest = { openDialog.value = false },
         title = { Text("Add alarm label") },
         text = {
@@ -41,7 +39,7 @@ fun LabelDialog(
         },
         confirmButton = {
             TextButton(onClick = { openDialog.value = false }) {
-                Text(text = "Ok", color = colors.primary)
+                Text(text = "Ok", color = colorScheme.primary)
             }
         }
     )

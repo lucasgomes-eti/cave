@@ -11,14 +11,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +28,11 @@ import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewOrEditAlarm(
     modifier: Modifier = Modifier,
-    modalState: ModalBottomSheetState,
+    drawerState: DrawerState,
     viewModel: NewOrEditAlarmViewModel
 ) {
     val scope = rememberCoroutineScope()
@@ -84,21 +83,21 @@ fun NewOrEditAlarm(
     val openDeleteDialog = remember { mutableStateOf(false) }
     if (openDeleteDialog.value) {
         AlertDialog(
-            containerColor = colors.surface,
-            textContentColor = colors.onSurface,
+            containerColor = colorScheme.surface,
+            textContentColor = colorScheme.onSurface,
             text = { Text("Delete alarm?") },
             confirmButton = {
                 TextButton(onClick = {
                     openDeleteDialog.value = false
-                    scope.launch { modalState.hide() }
+                    scope.launch { drawerState.close() }
                     viewModel.deleteAlarm()
                 }) {
-                    Text("Delete", color = colors.error)
+                    Text("Delete", color = colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { openDeleteDialog.value = false }) {
-                    Text("Cancel", color = colors.secondary)
+                    Text("Cancel", color = colorScheme.secondary)
                 }
             },
             onDismissRequest = { openDeleteDialog.value = false }
@@ -116,7 +115,7 @@ fun NewOrEditAlarm(
             Column(
                 Modifier
                     .size(48.dp)
-                    .clickable { scope.launch { modalState.hide() } },
+                    .clickable { scope.launch { drawerState.close() } },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -125,7 +124,7 @@ fun NewOrEditAlarm(
                     null,
                     Modifier
                         .size(24.dp),
-                    MaterialTheme.colors.onSurface
+                    colorScheme.onSurface
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -144,7 +143,7 @@ fun NewOrEditAlarm(
                     .size(48.dp)
                     .clickable {
                         scope.launch {
-                            modalState.hide()
+                            drawerState.close()
                             scope.launch { viewModel.saveAlarm() }
                         }
                     },
@@ -156,12 +155,12 @@ fun NewOrEditAlarm(
                     null,
                     Modifier
                         .size(24.dp),
-                    MaterialTheme.colors.onSurface
+                    colorScheme.onSurface
                 )
             }
         }
         ListItem(
-            text = {
+            headlineText = {
                 val datetimeInSystemZone =
                     selectedDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
                 Text(
@@ -174,27 +173,27 @@ fun NewOrEditAlarm(
                 )
             },
             overlineText = { Text("Time") },
-            trailing = {
+            trailingContent = {
                 Icon(
                     Icons.Default.KeyboardArrowRight,
                     null,
-                    tint = MaterialTheme.colors.onSurface
+                    tint = colorScheme.onSurface
                 )
             },
             modifier = Modifier.clickable { timePickerDialog.show() }
         )
         ListItem(
-            text = { Text("Ringtone") },
-            secondaryText = if (ringtoneResult == null) {
+            headlineText = { Text("Ringtone") },
+            supportingText = if (ringtoneResult == null) {
                 null
             } else {
                 { Text("${ringtoneResult!!.lastPathSegment}") }
             },
-            trailing = {
+            trailingContent = {
                 Icon(
                     Icons.Default.KeyboardArrowRight,
                     null,
-                    tint = MaterialTheme.colors.onSurface
+                    tint = colorScheme.onSurface
                 )
             },
             modifier = Modifier.clickable {
@@ -208,19 +207,19 @@ fun NewOrEditAlarm(
             }
         )
         ListItem(
-            text = { Text("Repeat") },
-            secondaryText = {
+            headlineText = { Text("Repeat") },
+            supportingText = {
                 Text(
                     if (viewModel.recurrence.value == null) "Once" else {
                         viewModel.recurrence.value!!.getDisplayName()
                     }
                 )
             },
-            trailing = {
+            trailingContent = {
                 Icon(
                     Icons.Default.KeyboardArrowRight,
                     null,
-                    tint = MaterialTheme.colors.onSurface
+                    tint = colorScheme.onSurface
                 )
             },
             modifier = Modifier.clickable {
@@ -228,8 +227,8 @@ fun NewOrEditAlarm(
             }
         )
         ListItem(
-            text = { Text("Vibrate when alarm sounds") },
-            trailing = {
+            headlineText = { Text("Vibrate when alarm sounds") },
+            trailingContent = {
                 Switch(
                     checked = viewModel.vibrate.value,
                     onCheckedChange = { viewModel.vibrate.value = it }
@@ -238,8 +237,8 @@ fun NewOrEditAlarm(
             modifier = Modifier.clickable { viewModel.vibrate.value = !viewModel.vibrate.value }
         )
         ListItem(
-            text = { Text("Delete after goes off") },
-            trailing = {
+            headlineText = { Text("Delete after goes off") },
+            trailingContent = {
                 Switch(
                     checked = viewModel.delete.value,
                     onCheckedChange = { viewModel.delete.value = it }
@@ -248,33 +247,33 @@ fun NewOrEditAlarm(
             modifier = Modifier.clickable { viewModel.delete.value = !viewModel.delete.value }
         )
         ListItem(
-            text = { Text("Label") },
-            trailing = {
+            headlineText = { Text("Label") },
+            trailingContent = {
                 Icon(
                     Icons.Default.KeyboardArrowRight,
                     null,
-                    tint = MaterialTheme.colors.onSurface
+                    tint = colorScheme.onSurface
                 )
             },
             modifier = Modifier.clickable {
                 openLabelDialog.value = true
             },
-            secondaryText = if (viewModel.label.value.text.isEmpty()) null else {
+            supportingText = if (viewModel.label.value.text.isEmpty()) null else {
                 { Text(text = viewModel.label.value.text) }
             }
         )
         if (viewModel.alarmId.value != null) {
             ListItem(
-                text = { Text("Delete", style = TextStyle(color = colors.onError)) },
-                icon = {
+                headlineText = { Text("Delete", style = TextStyle(color = colorScheme.onError)) },
+                trailingContent = {
                     Icon(
                         Icons.Default.Delete,
                         null,
-                        tint = colors.onError
+                        tint = colorScheme.onError
                     )
                 },
                 modifier = Modifier
-                    .background(color = colors.error)
+                    .background(color = colorScheme.error)
                     .clickable {
                         openDeleteDialog.value = true
                     }

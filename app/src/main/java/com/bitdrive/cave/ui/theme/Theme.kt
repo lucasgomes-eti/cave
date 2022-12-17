@@ -2,17 +2,17 @@ package com.bitdrive.cave.ui.theme
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
+private val DarkColorPalette = darkColorScheme(
     primary = LavenderBlue,
-    primaryVariant = DarkSlateBlue,
+    primaryContainer = DarkSlateBlue,
     secondary = LightPeriwinkle,
-    secondaryVariant = CameoPink,
+    secondaryContainer = CameoPink,
     background = EerieBlack,
     surface = CharlestonGreen,
     error = Melon,
@@ -24,11 +24,11 @@ private val DarkColorPalette = darkColors(
 )
 
 @SuppressLint("ConflictingOnColor")
-private val LightColorPalette = lightColors(
+private val LightColorPalette = lightColorScheme(
     primary = RoyalPurple,
-    primaryVariant = Lavender,
+    primaryContainer = Lavender,
     secondary = BlackCoral,
-    secondaryVariant = DeepTaupe,
+    secondaryContainer = DeepTaupe,
     background = Color.White,
     surface = Color.White,
     error = Firebrick,
@@ -48,7 +48,7 @@ fun CaveTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable (
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colors,
         typography = Typography,
         shapes = Shapes,
         content = content

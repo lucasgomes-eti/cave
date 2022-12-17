@@ -1,17 +1,11 @@
 package com.bitdrive.cave.ui.view
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -28,13 +22,12 @@ import androidx.navigation.compose.rememberNavController
 import com.bitdrive.cave.NavigationBarItems
 import com.bitdrive.cave.ui.theme.CaveTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainPageScaffold() {
     val navController = rememberNavController()
     CaveTheme {
-        val scaffoldState = rememberScaffoldState()
         Scaffold(
-            scaffoldState = scaffoldState,
             bottomBar = {
                 val items = listOf(
                     NavigationBarItems.Reminders,
@@ -45,7 +38,7 @@ fun MainPageScaffold() {
 
                 CompositionLocalProvider(LocalRippleTheme provides ClearRippleTheme) {
                     NavigationBar(
-                        containerColor = colors.surface,
+                        containerColor = colorScheme.surface,
                     ) {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination

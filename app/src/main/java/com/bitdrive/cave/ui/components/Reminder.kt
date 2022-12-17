@@ -3,11 +3,11 @@ package com.bitdrive.cave.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +30,9 @@ fun Reminder(
     Card(
         modifier = modifier
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colors.surface),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(12.dp),
-        border = if (isAlarmActive) BorderStroke(1.dp, colors.onSurface) else null,
+        border = if (isAlarmActive) BorderStroke(1.dp, colorScheme.onSurface) else null,
     ) {
         Row(
             modifier = Modifier
