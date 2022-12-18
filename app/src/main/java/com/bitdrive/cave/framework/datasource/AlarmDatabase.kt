@@ -24,6 +24,10 @@ class AlarmDatabase(
         return alarmDao.read().map { it.map { vo -> vo.map() } }
     }
 
+    override suspend fun readById(alarmId: Long): Alarm {
+        return alarmDao.readById(alarmId).map()
+    }
+
     override suspend fun update(alarm: Alarm) {
         add(alarm)
     }

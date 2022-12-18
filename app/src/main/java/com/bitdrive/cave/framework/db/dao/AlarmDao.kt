@@ -12,6 +12,9 @@ interface AlarmDao {
     @Query("SELECT * FROM alarm")
     fun read(): Flow<List<AlarmVO>>
 
+    @Query("SELECT * FROM alarm WHERE id= :alarmId")
+    suspend fun readById(alarmId: Long): AlarmVO
+
     @Insert(onConflict = REPLACE)
     suspend fun add(alarmEntity: AlarmEntity)
 

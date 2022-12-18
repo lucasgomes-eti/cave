@@ -17,6 +17,10 @@ class UseCasesModule {
 
     @Singleton
     @Provides
+    fun provideGetAlarmById(alarmRepository: AlarmRepository) = GetAlarmById(alarmRepository)
+
+    @Singleton
+    @Provides
     fun provideAddAlarm(alarmRepository: AlarmRepository) = AddAlarm(alarmRepository)
 
     @Singleton

@@ -15,6 +15,8 @@ class AlarmInMemory : AlarmDataSource {
 
     override fun read(): Flow<List<Alarm>> = flowOf(alarms)
 
+    override suspend fun readById(alarmId: Long) = alarms.first()
+
     override suspend fun update(alarm: Alarm) {
         alarms.replaceAll{ alarm }
     }

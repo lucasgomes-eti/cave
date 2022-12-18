@@ -7,9 +7,12 @@ import android.media.RingtoneManager.*
 import android.text.format.DateFormat.is24HourFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -23,7 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.bitdrive.cave.Routes
+import com.bitdrive.cave.ui.theme.CaveTheme
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
@@ -32,9 +40,11 @@ import kotlinx.datetime.*
 @Composable
 fun NewOrEditAlarm(
     modifier: Modifier = Modifier,
-    drawerState: DrawerState,
-    viewModel: NewOrEditAlarmViewModel
+    navController: NavController
 ) {
+
+    val viewModel = hiltViewModel<NewOrEditAlarmViewModel>()
+
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var ringtoneResult by remember {
@@ -89,7 +99,7 @@ fun NewOrEditAlarm(
             confirmButton = {
                 TextButton(onClick = {
                     openDeleteDialog.value = false
-                    scope.launch { drawerState.close() }
+                    scope.launch { navController.popBackStack() }
                     viewModel.deleteAlarm()
                 }) {
                     Text("Delete", color = colorScheme.error)
@@ -105,58 +115,47 @@ fun NewOrEditAlarm(
     }
 
     Column(modifier = modifier) {
-        Row(
-            Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
+        Surface(tonalElevation = 2.dp, shadowElevation = 2.dp) {
+            Row(
                 Modifier
-                    .size(48.dp)
-                    .clickable { scope.launch { drawerState.close() } },
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    Icons.Default.Close,
-                    null,
-                    Modifier
-                        .size(24.dp),
-                    colorScheme.onSurface
-                )
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                val timeUntilAlarm = Clock.System.now().periodUntil(selectedDateTime, TimeZone.UTC)
-                Text("Add alarm")
-                Text(
-                    text = if (timeUntilAlarm.hours >= 1) {
-                        "Alarm in ${timeUntilAlarm.hours} hours and ${timeUntilAlarm.minutes} minutes"
-                    } else {
-                        "Alarm in ${timeUntilAlarm.minutes} minutes"
-                    }
-                )
-            }
-            Column(
-                Modifier
-                    .size(48.dp)
-                    .clickable {
-                        scope.launch {
-                            drawerState.close()
-                            scope.launch { viewModel.saveAlarm() }
+                IconButton(
+                    onClick = { scope.launch { navController.popBackStack() } },
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        null,
+                        tint = colorScheme.onSurface
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    val timeUntilAlarm =
+                        Clock.System.now().periodUntil(selectedDateTime, TimeZone.UTC)
+                    Text("Add alarm")
+                    Text(
+                        text = if (timeUntilAlarm.hours >= 1) {
+                            "Alarm in ${timeUntilAlarm.hours} hours and ${timeUntilAlarm.minutes} minutes"
+                        } else {
+                            "Alarm in ${timeUntilAlarm.minutes} minutes"
                         }
-                    },
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    Icons.Default.Check,
-                    null,
-                    Modifier
-                        .size(24.dp),
-                    colorScheme.onSurface
-                )
+                    )
+                }
+                IconButton(onClick = {
+                    scope.launch {
+                        navController.popBackStack()
+                        scope.launch { viewModel.saveAlarm() }
+                    }
+                }) {
+                    Icon(
+                        Icons.Default.Check,
+                        null,
+                        tint = colorScheme.onSurface
+                    )
+                }
             }
         }
         ListItem(
@@ -262,14 +261,14 @@ fun NewOrEditAlarm(
                 { Text(text = viewModel.label.value.text) }
             }
         )
-        if (viewModel.alarmId.value != null) {
+        if (viewModel.isEditing) {
             ListItem(
-                headlineText = { Text("Delete", style = TextStyle(color = colorScheme.onError)) },
+                headlineText = { Text("Delete", style = TextStyle(color = colorScheme.error)) },
                 trailingContent = {
                     Icon(
                         Icons.Default.Delete,
                         null,
-                        tint = colorScheme.onError
+                        tint = colorScheme.error
                     )
                 },
                 modifier = Modifier

@@ -4,12 +4,15 @@ import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bitdrive.cave.Routes
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.domain.Recurrence
 import com.bitdrive.core.interactors.AddAlarm
 import com.bitdrive.core.interactors.DeleteAlarm
+import com.bitdrive.core.interactors.GetAlarmById
 import com.bitdrive.core.interactors.UpdateAlarm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,6 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewOrEditAlarmViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val getAlarmById: GetAlarmById,
     private val addAlarm: AddAlarm,
     private val updateAlarm: UpdateAlarm,
     private val deleteAlarm: DeleteAlarm
@@ -36,7 +41,17 @@ class NewOrEditAlarmViewModel @Inject constructor(
 
     val label = mutableStateOf(TextFieldValue(""))
 
-    val alarmId = mutableStateOf<Long?>(null)
+    private val alarmId: Long? get() {
+        val value: String? = savedStateHandle[Routes.newOrEditAlarm.alarmIdArgument]
+        return value?.toLongOrNull()
+    }
+    val isEditing = alarmId != null
+
+    init {
+        if (isEditing) {
+            viewModelScope.launch { bindAlarm(getAlarmById(alarmId!!)) }
+        }
+    }
 
     fun createRecurrence(
         repeatRecurrence: String,
@@ -90,25 +105,14 @@ class NewOrEditAlarmViewModel @Inject constructor(
             isActive = true,
             label = label.value.text.ifEmpty { null }
         )
-        if (alarmId.value == null) {
+        if (alarmId == null) {
             addAlarm(alarm)
         } else {
-            updateAlarm(alarm.copy(id = alarmId.value!!))
+            updateAlarm(alarm.copy(id = alarmId))
         }
     }
 
-    fun reset() {
-        alarmId.value = null
-        selectedDateTime.value = Clock.System.now().plus(DateTimePeriod(hours = 1), TimeZone.UTC)
-        ringtoneResult.value = null
-        recurrence.value = null
-        vibrate.value = true
-        delete.value = false
-        label.value = TextFieldValue("")
-    }
-
     fun bindAlarm(alarm: Alarm) {
-        alarmId.value = alarm.id
         selectedDateTime.value = alarm.datetimeInUtc.toInstant(TimeZone.UTC)
         ringtoneResult.value =
             alarm.ringtoneEncodedPath?.let { Uri.Builder().encodedPath(it).build() }
@@ -121,7 +125,7 @@ class NewOrEditAlarmViewModel @Inject constructor(
     fun deleteAlarm() {
         viewModelScope.launch {
             val alarm = Alarm(
-                id = alarmId.value,
+                id = alarmId,
                 datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
                 ringtoneEncodedPath = ringtoneResult.value?.encodedPath,
                 repeat = recurrence.value,
