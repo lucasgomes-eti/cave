@@ -17,7 +17,7 @@ data class AlarmVO(
 ) {
     fun map() = Alarm(
         id = alarmEntity.id!!,
-        datetimeInUtc = alarmEntity.datetimeInUtc,
+        datetime = alarmEntity.datetimeInUtc,
         ringtoneEncodedPath = alarmEntity.ringtoneEncodedPath,
         repeat = recurrenceEntity?.map(),
         vibrate = alarmEntity.vibrate,

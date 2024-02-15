@@ -6,15 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.interactors.GetAlarms
 import com.bitdrive.core.interactors.ToggleAlarm
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class AlarmsViewModel @Inject constructor(
+class AlarmsViewModel(
     private val getAlarms: GetAlarms,
     private val toggleAlarm: ToggleAlarm
 ) : ViewModel() {

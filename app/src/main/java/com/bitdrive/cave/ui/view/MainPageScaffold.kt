@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -24,6 +23,7 @@ import androidx.navigation.navArgument
 import com.bitdrive.cave.NavigationBarItems
 import com.bitdrive.cave.Routes
 import com.bitdrive.cave.ui.theme.CaveTheme
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +90,7 @@ fun MainPageScaffold() {
                 ) {
                     composable(NavigationBarItems.Reminders.route) {
                         RemindersView(
-                            viewModel = hiltViewModel(),
+                            viewModel = koinViewModel(),
                             navController
                         )
                     }

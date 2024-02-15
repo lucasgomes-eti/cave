@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.bitdrive.core.domain.Alarm
 import kotlinx.datetime.TimeZone
@@ -28,8 +29,8 @@ fun Reminder(
         mutableStateOf(alarm.isActive)
     }
     Card(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth().clip(RoundedCornerShape(12.dp)).then(modifier),
         colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         shape = RoundedCornerShape(12.dp),
         border = if (isAlarmActive) BorderStroke(1.dp, colorScheme.onSurface) else null,
@@ -42,20 +43,16 @@ fun Reminder(
             horizontalArrangement = Arrangement.SpaceBetween
         ) { // content
             Column { // text
-                val dateTimeInCurrentTimeZone =
-                    alarm.datetimeInUtc.toInstant(TimeZone.UTC).toLocalDateTime(
-                        TimeZone.currentSystemDefault()
-                    )
                 Text(
                     text = "${
                         String.format(
                             "%02d",
-                            dateTimeInCurrentTimeZone.hour
+                            alarm.datetime.hour
                         )
                     }:${
                         String.format(
                             "%02d",
-                            dateTimeInCurrentTimeZone.minute
+                            alarm.datetime.minute
                         )
                     }" + if (alarm.label.isNullOrBlank()) "" else " | ${alarm.label}",
                     modifier = Modifier.alpha(if (isAlarmActive) 1f else 0.6f)

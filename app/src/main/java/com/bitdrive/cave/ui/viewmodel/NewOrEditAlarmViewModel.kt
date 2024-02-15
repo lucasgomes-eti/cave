@@ -1,5 +1,9 @@
 package com.bitdrive.cave.ui.viewmodel
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -7,6 +11,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bitdrive.cave.AlarmReceiver
 import com.bitdrive.cave.Routes
 import com.bitdrive.core.domain.Alarm
 import com.bitdrive.core.domain.Recurrence
@@ -14,22 +19,28 @@ import com.bitdrive.core.interactors.AddAlarm
 import com.bitdrive.core.interactors.DeleteAlarm
 import com.bitdrive.core.interactors.GetAlarmById
 import com.bitdrive.core.interactors.UpdateAlarm
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.datetime.*
-import javax.inject.Inject
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimePeriod
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
-@HiltViewModel
-class NewOrEditAlarmViewModel @Inject constructor(
+class NewOrEditAlarmViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getAlarmById: GetAlarmById,
     private val addAlarm: AddAlarm,
     private val updateAlarm: UpdateAlarm,
-    private val deleteAlarm: DeleteAlarm
+    private val deleteAlarm: DeleteAlarm,
+    private val alarmManager: AlarmManager,
+    private val appContext: Context
 ) : ViewModel() {
 
     var selectedDateTime =
-        mutableStateOf(Clock.System.now().plus(DateTimePeriod(hours = 1), TimeZone.UTC))
+        mutableStateOf(Clock.System.now().plus(DateTimePeriod(hours = 1), TimeZone.currentSystemDefault()))
 
     var ringtoneResult = mutableStateOf<Uri?>(null)
 
@@ -41,10 +52,11 @@ class NewOrEditAlarmViewModel @Inject constructor(
 
     val label = mutableStateOf(TextFieldValue(""))
 
-    private val alarmId: Long? get() {
-        val value: String? = savedStateHandle[Routes.newOrEditAlarm.alarmIdArgument]
-        return value?.toLongOrNull()
-    }
+    private val alarmId: Long?
+        get() {
+            val value: String? = savedStateHandle[Routes.newOrEditAlarm.alarmIdArgument]
+            return value?.toLongOrNull()
+        }
     val isEditing = alarmId != null
 
     init {
@@ -97,7 +109,7 @@ class NewOrEditAlarmViewModel @Inject constructor(
 
     suspend fun saveAlarm() {
         val alarm = Alarm(
-            datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
+            datetime = selectedDateTime.value.toLocalDateTime(TimeZone.currentSystemDefault()),
             ringtoneEncodedPath = ringtoneResult.value?.encodedPath,
             repeat = recurrence.value,
             vibrate = vibrate.value,
@@ -110,10 +122,24 @@ class NewOrEditAlarmViewModel @Inject constructor(
         } else {
             updateAlarm(alarm.copy(id = alarmId))
         }
+
+        val intent = Intent(appContext, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            appContext, alarm.hashCode(), intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+//        alarmManager.setAlarmClock(
+//            AlarmManager.AlarmClockInfo(
+//                alarm.datetime.toInstant(
+//                    TimeZone.currentSystemDefault()
+//                ).toEpochMilliseconds(), pendingIntent
+//            ), pendingIntent
+//        )
     }
 
     fun bindAlarm(alarm: Alarm) {
-        selectedDateTime.value = alarm.datetimeInUtc.toInstant(TimeZone.UTC)
+        selectedDateTime.value = alarm.datetime.toInstant(TimeZone.currentSystemDefault())
         ringtoneResult.value =
             alarm.ringtoneEncodedPath?.let { Uri.Builder().encodedPath(it).build() }
         recurrence.value = alarm.repeat
@@ -126,7 +152,7 @@ class NewOrEditAlarmViewModel @Inject constructor(
         viewModelScope.launch {
             val alarm = Alarm(
                 id = alarmId,
-                datetimeInUtc = selectedDateTime.value.toLocalDateTime(TimeZone.UTC),
+                datetime = selectedDateTime.value.toLocalDateTime(TimeZone.currentSystemDefault()),
                 ringtoneEncodedPath = ringtoneResult.value?.encodedPath,
                 repeat = recurrence.value,
                 vibrate = vibrate.value,

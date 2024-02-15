@@ -3,38 +3,59 @@ package com.bitdrive.cave.ui.view
 import android.app.Activity.RESULT_OK
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.media.RingtoneManager.*
+import android.media.RingtoneManager.ACTION_RINGTONE_PICKER
+import android.media.RingtoneManager.EXTRA_RINGTONE_PICKED_URI
+import android.media.RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT
+import android.media.RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT
+import android.media.RingtoneManager.EXTRA_RINGTONE_TITLE
+import android.media.RingtoneManager.EXTRA_RINGTONE_TYPE
+import android.media.RingtoneManager.TYPE_ALARM
 import android.text.format.DateFormat.is24HourFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.bitdrive.cave.Routes
-import com.bitdrive.cave.ui.theme.CaveTheme
 import com.bitdrive.cave.ui.viewmodel.NewOrEditAlarmViewModel
 import kotlinx.coroutines.launch
-import kotlinx.datetime.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.periodUntil
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +64,7 @@ fun NewOrEditAlarm(
     navController: NavController
 ) {
 
-    val viewModel = hiltViewModel<NewOrEditAlarmViewModel>()
+    val viewModel = koinViewModel<NewOrEditAlarmViewModel>()
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -71,11 +92,7 @@ fun NewOrEditAlarm(
                 hour = hourOfDay,
                 minute = minute
             )
-            val dateTimeInCurrentTimeZone =
-                timeInCurrentTimeZone.toInstant(TimeZone.currentSystemDefault())
-            selectedDateTime = dateTimeInCurrentTimeZone.toLocalDateTime(TimeZone.UTC).toInstant(
-                TimeZone.UTC
-            )
+            selectedDateTime = timeInCurrentTimeZone.toInstant(TimeZone.currentSystemDefault())
         },
         selectedDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).hour,
         selectedDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).minute,

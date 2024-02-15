@@ -7,12 +7,12 @@ import kotlinx.datetime.*
 class Converters {
     @TypeConverter
     fun fromLocalDateTimeToEpoch(value: LocalDateTime): Long {
-        return value.toInstant(TimeZone.UTC).epochSeconds
+        return value.toInstant(TimeZone.currentSystemDefault()).epochSeconds
     }
 
     @TypeConverter
     fun fromEpochToLocalDateTime(value: Long): LocalDateTime {
-        return Instant.fromEpochSeconds(value).toLocalDateTime(TimeZone.UTC)
+        return Instant.fromEpochSeconds(value).toLocalDateTime(TimeZone.currentSystemDefault())
     }
 
     @TypeConverter
@@ -51,9 +51,9 @@ class Converters {
 
     @TypeConverter
     fun fromLocalDateToEpoch(value: LocalDate?) =
-        value?.atTime(0, 0)?.toInstant(TimeZone.UTC)?.epochSeconds
+        value?.atTime(0, 0)?.toInstant(TimeZone.currentSystemDefault())?.epochSeconds
 
     @TypeConverter
     fun fromEpochToLocalDate(value: Long?) =
-        value?.let { Instant.fromEpochSeconds(it).toLocalDateTime(TimeZone.UTC).date }
+        value?.let { Instant.fromEpochSeconds(it).toLocalDateTime(TimeZone.currentSystemDefault()).date }
 }

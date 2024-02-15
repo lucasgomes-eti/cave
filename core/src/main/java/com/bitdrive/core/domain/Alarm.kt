@@ -7,7 +7,7 @@ import kotlinx.datetime.toLocalDateTime
 
 data class Alarm(
     val id: Long? = null,
-    val datetimeInUtc: LocalDateTime,
+    val datetime: LocalDateTime,
     val ringtoneEncodedPath: String?,
     val repeat: Recurrence?,
     val vibrate: Boolean,
@@ -16,7 +16,7 @@ data class Alarm(
     val label: String?
 ) {
     constructor() : this(
-        datetimeInUtc = Clock.System.now().toLocalDateTime(TimeZone.UTC),
+        datetime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         ringtoneEncodedPath = null,
         repeat = null,
         vibrate = true,

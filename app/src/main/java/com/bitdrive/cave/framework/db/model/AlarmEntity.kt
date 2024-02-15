@@ -19,7 +19,7 @@ data class AlarmEntity(
 ) {
     constructor(alarm: Alarm, recurrenceId: Long? = null): this(
         id = alarm.id,
-        datetimeInUtc = alarm.datetimeInUtc,
+        datetimeInUtc = alarm.datetime,
         ringtoneEncodedPath = alarm.ringtoneEncodedPath,
         recurrenceId = recurrenceId,
         vibrate = alarm.vibrate,

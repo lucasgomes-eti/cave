@@ -5,31 +5,19 @@ import androidx.room.Room
 import com.bitdrive.cave.framework.db.Database
 import com.bitdrive.cave.framework.db.dao.AlarmDao
 import com.bitdrive.cave.framework.db.dao.RecurrenceDao
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
 class DatabaseModule {
-    @Singleton
-    @Provides
+
     fun provideDatabase(app: Application): Database {
         return Room
             .databaseBuilder(app, Database::class.java, "cave.db")
             .build()
     }
 
-    @Singleton
-    @Provides
     internal fun provideAlarmDao(database: Database): AlarmDao {
         return database.alarmDao()
     }
 
-    @Singleton
-    @Provides
     internal fun provideRecurrenceDao(database: Database): RecurrenceDao {
         return database.recurrenceDao()
     }
